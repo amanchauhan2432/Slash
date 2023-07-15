@@ -10,6 +10,7 @@
 #include "InputMappingContext.h"
 #include "InputAction.h"
 #include "EnhancedInputComponent.h"
+#include "../Items/Weapons/Weapon.h"
 
 // Sets default values
 AEcho::AEcho()
@@ -69,9 +70,9 @@ void AEcho::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(MovementAction, ETriggerEvent::Triggered, this, &AEcho::Movement);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AEcho::Look);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
+		EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Triggered, this, &AEcho::EKeyPressed);
 	}
 }
-
 
 void AEcho::Movement(const FInputActionValue& Value)
 {
@@ -99,5 +100,14 @@ void AEcho::Look(const FInputActionValue& Value)
 
 		// Pitch Rotation (mouse Y movement)
 		AddControllerPitchInput(Value.Get<FVector2D>().Y);
+	}
+}
+
+void AEcho::EKeyPressed()
+{
+	if (OverlappingWeapon)
+	{
+		OverlappingWeapon->Equip(GetMesh(), FName("WeaponSocket"));
+		CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
 	}
 }

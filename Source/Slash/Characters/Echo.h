@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "CharacterTypes.h"
 #include "Echo.generated.h"
 
 UCLASS()
@@ -28,6 +29,10 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UGroomComponent* Eyebrows;
 
+	class AWeapon* OverlappingWeapon;
+
+	ECharacterState CharacterState = ECharacterState::ECS_UnEquipped;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -43,10 +48,13 @@ protected:
 	class UInputAction* MovementAction;
 
 	UPROPERTY(EditAnywhere, Category = Input)
-	class UInputAction* LookAction;
+	UInputAction* LookAction;
 
 	UPROPERTY(EditAnywhere, Category = Input)
-	class UInputAction* JumpAction;
+	UInputAction* JumpAction;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* EquipAction;
 
 public:	
 	// Called every frame
@@ -54,5 +62,7 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	void EKeyPressed();
 
 };
