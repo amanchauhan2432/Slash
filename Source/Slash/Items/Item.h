@@ -6,6 +6,13 @@
 #include "GameFramework/Actor.h"
 #include "Item.generated.h"
 
+
+enum class EItemState : uint8
+{
+	EIS_Hovering UMETA(DisplayName = "Hovering"),
+	EIS_Equipped UMETA(DisplayName = "Equipped")
+};
+
 UCLASS()
 class SLASH_API AItem : public AActor
 {
@@ -30,8 +37,6 @@ public:
 	UPROPERTY(EditAnywhere, Category = Sine)
 	float TimeConstant = 5.f;
 
-	bool bCanMove = false;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -41,6 +46,8 @@ protected:
 
 	UFUNCTION()
 	virtual void OnSphereOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	EItemState ItemState = EItemState::EIS_Hovering;
 
 public:	
 	// Called every frame

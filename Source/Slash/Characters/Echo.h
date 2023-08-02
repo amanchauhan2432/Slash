@@ -30,8 +30,18 @@ public:
 	class UGroomComponent* Eyebrows;
 
 	class AWeapon* OverlappingWeapon;
+	AWeapon* EquippedWeapon;
 
 	ECharacterState CharacterState = ECharacterState::ECS_UnEquipped;
+
+	UPROPERTY(BlueprintReadWrite)
+	EActionState ActionState = EActionState::EAS_Unoccupied;
+
+	UPROPERTY(EditAnywhere, Category = Animation)
+	class UAnimMontage* AttackMontage;
+
+	UPROPERTY(EditAnywhere, Category = Animation)
+	class UAnimMontage* ArmDisarmMontage;
 
 protected:
 	// Called when the game starts or when spawned
@@ -56,6 +66,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* EquipAction;
 
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* AttackAction;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -64,5 +77,15 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	void EKeyPressed();
+	void Attack();
+
+	void PlayAttackMontage();
+	void PlayArmDisarmMontage(FName SectionName);
+
+	UFUNCTION(BlueprintCallable)
+	void Arm();
+
+	UFUNCTION(BlueprintCallable)
+	void Disarm();
 
 };

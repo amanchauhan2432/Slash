@@ -18,6 +18,9 @@ public:
 
 	class AEcho* Player;
 
+	UPROPERTY(EditAnywhere, Category = Sound)
+	class USoundBase* EquipSound;
+
 protected:
 
 	virtual void OnSphereOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
@@ -27,5 +30,6 @@ protected:
 public:
 
 	void Equip(USceneComponent* InParent, FName InSocketName);
+	void AttachMeshToSocket(USceneComponent* InParent, FName InSocketName);
 
 };

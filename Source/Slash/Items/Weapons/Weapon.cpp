@@ -3,6 +3,8 @@
 
 #include "Weapon.h"
 #include "../../Characters/Echo.h"
+#include "Kismet/GameplayStatics.h"
+#include "Components/SphereComponent.h"
 
 void AWeapon::OnSphereOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
@@ -18,11 +20,28 @@ void AWeapon::OnSphereOverlapBegin(UPrimitiveComponent* OverlappedComponent, AAc
 void AWeapon::OnSphereOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
     Super::OnSphereOverlapEnd(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex);
+
+    Player->OverlappingWeapon = nullptr;
 }
 
 void AWeapon::Equip(USceneComponent* InParent, FName InSocketName)
 {
+    AttachMeshToSocket(InParent, InSocketName);
+    ItemState = EItemState::EIS_Equipped;
+
+    if (EquipSound)
+    {
+        UGameplayStatics::PlaySoundAtLocation(this, EquipSound, GetActorLocation());
+    }
+
+    if (Sphere)
+    {
+        Sphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    }
+}
+
+void AWeapon::AttachMeshToSocket(USceneComponent* InParent, FName InSocketName)
+{
     FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
     ItemMesh->AttachToComponent(InParent, TransformRules, InSocketName);
-    bCanMove = false;
 }

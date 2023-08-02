@@ -27,8 +27,6 @@ void AItem::BeginPlay()
 	
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &AItem::OnSphereOverlapBegin);
 	Sphere->OnComponentEndOverlap.AddDynamic(this, &AItem::OnSphereOverlapEnd);
-
-	bCanMove = true;
 }
 
 // Called every frame
@@ -36,7 +34,7 @@ void AItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (bCanMove)
+	if (ItemState == EItemState::EIS_Hovering)
 	{
 		RunningTime += DeltaTime;
 		AddActorWorldOffset(FVector(0.f, 0.f, Amplitude * FMath::Sin(RunningTime * TimeConstant)));

@@ -70,13 +70,14 @@ void AEcho::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(MovementAction, ETriggerEvent::Triggered, this, &AEcho::Movement);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AEcho::Look);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Triggered, this, &AEcho::EKeyPressed);
+		EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Started, this, &AEcho::EKeyPressed);
+		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AEcho::Attack);
 	}
 }
 
 void AEcho::Movement(const FInputActionValue& Value)
 {
-
+	if (ActionState != EActionState::EAS_Unoccupied) return;
 	if (Controller)
 	{
 		const FRotator Rotation{ 0.f, GetControlRotation().Yaw, 0.f };
@@ -93,6 +94,7 @@ void AEcho::Movement(const FInputActionValue& Value)
 
 void AEcho::Look(const FInputActionValue& Value)
 {
+	if (ActionState != EActionState::EAS_Unoccupied) return;
 	if (Controller)
 	{
 		// Yaw Rotation (mouse X movement)
@@ -104,10 +106,92 @@ void AEcho::Look(const FInputActionValue& Value)
 }
 
 void AEcho::EKeyPressed()
-{
+{	
 	if (OverlappingWeapon)
 	{
+		EquippedWeapon = OverlappingWeapon;
 		OverlappingWeapon->Equip(GetMesh(), FName("WeaponSocket"));
 		CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
+		OverlappingWeapon = nullptr;
+	}
+	else
+	{
+		if (ActionState == EActionState::EAS_Unoccupied && CharacterState != ECharacterState::ECS_UnEquipped)
+		{
+			PlayArmDisarmMontage(FName("Disarm"));
+			CharacterState = ECharacterState::ECS_UnEquipped;
+			ActionState = EActionState::EAS_EquippingWeapon;
+		}
+		else if (ActionState == EActionState::EAS_Unoccupied && CharacterState == ECharacterState::ECS_UnEquipped && EquippedWeapon)
+		{
+			PlayArmDisarmMontage(FName("Arm"));
+			CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
+			ActionState = EActionState::EAS_EquippingWeapon;
+		}
+	}
+}
+
+void AEcho::Attack()
+{
+	if (CharacterState == ECharacterState::ECS_EquippedOneHandedWeapon && ActionState == EActionState::EAS_Unoccupied)
+	{
+		PlayAttackMontage();
+		ActionState = EActionState::EAS_Attacking;
+	}
+}
+
+void AEcho::PlayAttackMontage()
+{
+	if (AttackMontage)
+	{
+		GetMesh()->GetAnimInstance()->Montage_Play(AttackMontage);
+		FName SectionName;
+		switch (FMath::RandRange(0, 4))
+		{
+		case 0:
+			SectionName = FName("Attack1");
+			break;
+		case 1:
+			SectionName = FName("Attack2");
+			break;
+		case 2:
+			SectionName = FName("Attack3");
+			break;
+		case 3:
+			SectionName = FName("Attack4");
+			break;
+		case 4:
+			SectionName = FName("Attack5");
+			break;
+		default:
+			SectionName = FName("Attack1");
+			break;
+		}
+		GetMesh()->GetAnimInstance()->Montage_JumpToSection(SectionName, AttackMontage);
+	}
+}
+
+void AEcho::PlayArmDisarmMontage(FName SectionName)
+{
+	if (ArmDisarmMontage)
+	{
+		GetMesh()->GetAnimInstance()->Montage_Play(ArmDisarmMontage);
+		GetMesh()->GetAnimInstance()->Montage_JumpToSection(SectionName, ArmDisarmMontage);
+	}
+}
+
+void AEcho::Arm()
+{
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->AttachMeshToSocket(GetMesh(), FName("WeaponSocket"));
+	}
+}
+
+void AEcho::Disarm()
+{
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->AttachMeshToSocket(GetMesh(), FName("SpineSocket"));
 	}
 }
