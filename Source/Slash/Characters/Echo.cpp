@@ -11,6 +11,7 @@
 #include "InputAction.h"
 #include "EnhancedInputComponent.h"
 #include "../Items/Weapons/Weapon.h"
+#include "Components/BoxComponent.h"
 
 // Sets default values
 AEcho::AEcho()
@@ -193,5 +194,14 @@ void AEcho::Disarm()
 	if (EquippedWeapon)
 	{
 		EquippedWeapon->AttachMeshToSocket(GetMesh(), FName("SpineSocket"));
+	}
+}
+
+void AEcho::SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled)
+{
+	if (EquippedWeapon && EquippedWeapon->WeaponBox)
+	{
+		EquippedWeapon->WeaponBox->SetCollisionEnabled(CollisionEnabled);
+		EquippedWeapon->IgnoreActors.Empty();
 	}
 }
