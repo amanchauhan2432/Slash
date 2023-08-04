@@ -19,6 +19,12 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UGeometryCollectionComponent* GeometryCollection;
 
+	UPROPERTY(EditAnywhere)
+	class UCapsuleComponent* Capsule;
+
+	UPROPERTY(EditAnywhere, Category = "Breakable Properties")
+	TArray<TSubclassOf<class ATreasure>> TreasureClasses;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

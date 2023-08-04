@@ -37,6 +37,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = Sine)
 	float TimeConstant = 5.f;
 
+	UPROPERTY(EditAnywhere)
+	class UNiagaraComponent* EmbersEffect;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
