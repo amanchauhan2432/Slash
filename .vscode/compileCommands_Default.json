@@ -1,5 +1,21 @@
 [
 	{
+		"file": "D:\\Personl Projects\\Slash\\Source\\Slash\\Breakable\\BreakableActor.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.34.31933\\bin\\Hostx64\\x64\\cl.exe",
+			"@D:\\Personl Projects\\Slash\\.vscode\\compileCommands_Default\\Slash.271.rsp"
+		],
+		"directory": "C:\\Program Files\\Epic Games\\UE_5.2\\Engine\\Source"
+	},
+	{
+		"file": "D:\\Personl Projects\\Slash\\Source\\Slash\\Breakable\\BreakableActor.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.34.31933\\bin\\Hostx64\\x64\\cl.exe",
+			"@D:\\Personl Projects\\Slash\\.vscode\\compileCommands_Default\\Slash.271.rsp"
+		],
+		"directory": "C:\\Program Files\\Epic Games\\UE_5.2\\Engine\\Source"
+	},
+	{
 		"file": "D:\\Personl Projects\\Slash\\Source\\Slash\\Characters\\CharacterTypes.h",
 		"arguments": [
 			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.34.31933\\bin\\Hostx64\\x64\\cl.exe",

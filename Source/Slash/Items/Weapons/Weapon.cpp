@@ -47,7 +47,10 @@ void AWeapon::OnSphereOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActo
 {
     Super::OnSphereOverlapEnd(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex);
 
-    Player->OverlappingWeapon = nullptr;
+    if (Player)
+    {
+        Player->OverlappingWeapon = nullptr;
+    }
 }
 
 void AWeapon::OnBoxOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -69,9 +72,10 @@ void AWeapon::OnBoxOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor
         IHitInterface* HitInterface = Cast<IHitInterface>(BoxHit.GetActor());
         if (HitInterface)
         {
-            HitInterface->GetHit(BoxHit.ImpactPoint);
-            IgnoreActors.AddUnique(BoxHit.GetActor());
+            HitInterface->Execute_GetHit(BoxHit.GetActor(), BoxHit.ImpactPoint);
         }
+        IgnoreActors.AddUnique(BoxHit.GetActor());
+        CreateFields(BoxHit.ImpactPoint);
     }
 }
 
