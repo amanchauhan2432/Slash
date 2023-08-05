@@ -56,6 +56,22 @@
 		"directory": "C:\\Program Files\\Epic Games\\UE_5.2\\Engine\\Source"
 	},
 	{
+		"file": "D:\\Personl Projects\\Slash\\Source\\Slash\\Components\\AttributeComponent.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.34.31933\\bin\\Hostx64\\x64\\cl.exe",
+			"@D:\\Personl Projects\\Slash\\.vscode\\compileCommands_Default\\Slash.271.rsp"
+		],
+		"directory": "C:\\Program Files\\Epic Games\\UE_5.2\\Engine\\Source"
+	},
+	{
+		"file": "D:\\Personl Projects\\Slash\\Source\\Slash\\Components\\AttributeComponent.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.34.31933\\bin\\Hostx64\\x64\\cl.exe",
+			"@D:\\Personl Projects\\Slash\\.vscode\\compileCommands_Default\\Slash.271.rsp"
+		],
+		"directory": "C:\\Program Files\\Epic Games\\UE_5.2\\Engine\\Source"
+	},
+	{
 		"file": "D:\\Personl Projects\\Slash\\Source\\Slash\\Enemy\\Enemy.cpp",
 		"arguments": [
 			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.34.31933\\bin\\Hostx64\\x64\\cl.exe",
@@ -65,6 +81,38 @@
 	},
 	{
 		"file": "D:\\Personl Projects\\Slash\\Source\\Slash\\Enemy\\Enemy.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.34.31933\\bin\\Hostx64\\x64\\cl.exe",
+			"@D:\\Personl Projects\\Slash\\.vscode\\compileCommands_Default\\Slash.271.rsp"
+		],
+		"directory": "C:\\Program Files\\Epic Games\\UE_5.2\\Engine\\Source"
+	},
+	{
+		"file": "D:\\Personl Projects\\Slash\\Source\\Slash\\HUD\\HealthBar.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.34.31933\\bin\\Hostx64\\x64\\cl.exe",
+			"@D:\\Personl Projects\\Slash\\.vscode\\compileCommands_Default\\Slash.271.rsp"
+		],
+		"directory": "C:\\Program Files\\Epic Games\\UE_5.2\\Engine\\Source"
+	},
+	{
+		"file": "D:\\Personl Projects\\Slash\\Source\\Slash\\HUD\\HealthBar.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.34.31933\\bin\\Hostx64\\x64\\cl.exe",
+			"@D:\\Personl Projects\\Slash\\.vscode\\compileCommands_Default\\Slash.271.rsp"
+		],
+		"directory": "C:\\Program Files\\Epic Games\\UE_5.2\\Engine\\Source"
+	},
+	{
+		"file": "D:\\Personl Projects\\Slash\\Source\\Slash\\HUD\\HealthBarComponent.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.34.31933\\bin\\Hostx64\\x64\\cl.exe",
+			"@D:\\Personl Projects\\Slash\\.vscode\\compileCommands_Default\\Slash.271.rsp"
+		],
+		"directory": "C:\\Program Files\\Epic Games\\UE_5.2\\Engine\\Source"
+	},
+	{
+		"file": "D:\\Personl Projects\\Slash\\Source\\Slash\\HUD\\HealthBarComponent.h",
 		"arguments": [
 			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.34.31933\\bin\\Hostx64\\x64\\cl.exe",
 			"@D:\\Personl Projects\\Slash\\.vscode\\compileCommands_Default\\Slash.271.rsp"

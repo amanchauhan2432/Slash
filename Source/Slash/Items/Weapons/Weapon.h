@@ -33,6 +33,8 @@ public:
 
 	TArray<AActor*> IgnoreActors;
 
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	float Damage  =  20.f;
 protected:
 
 	virtual void BeginPlay() override;
@@ -47,7 +49,7 @@ protected:
 	void CreateFields(const FVector& FieldLocation);
 
 public:
-	void Equip(USceneComponent* InParent, FName InSocketName);
+	void Equip(USceneComponent* InParent, FName InSocketName, AActor* NewOwner, APawn* NewInstigator);
 	void AttachMeshToSocket(USceneComponent* InParent, FName InSocketName);
 
 };

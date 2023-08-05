@@ -111,7 +111,7 @@ void AEcho::EKeyPressed()
 	if (OverlappingWeapon)
 	{
 		EquippedWeapon = OverlappingWeapon;
-		OverlappingWeapon->Equip(GetMesh(), FName("WeaponSocket"));
+		OverlappingWeapon->Equip(GetMesh(), FName("WeaponSocket"), this, this);
 		CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
 		OverlappingWeapon = nullptr;
 	}

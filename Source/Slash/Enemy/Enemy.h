@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "../Interface/HitInterface.h"
+#include "../Characters/CharacterTypes.h"
 #include "Enemy.generated.h"
 
 UCLASS()
@@ -17,11 +18,29 @@ public:
 	UPROPERTY(EditAnywhere, Category = Animation)
 	UAnimMontage* HitReactMontage;
 
+	UPROPERTY(EditAnywhere, Category = Animation)
+	UAnimMontage* DeathMontage;
+
 	UPROPERTY(EditAnywhere, Category = Sound)
 	USoundBase* HitSound;
 
 	UPROPERTY(EditAnywhere, Category = Particle)
 	UParticleSystem* HitParticle;
+
+	UPROPERTY(EditAnywhere)
+	class UAttributeComponent* Attribute;
+
+	UPROPERTY(EditAnywhere)
+	class UHealthBarComponent* HealthBarComponent;
+
+	UPROPERTY(BlueprintReadOnly)
+	EDeathPose DeathPose = EDeathPose::EDP_Alive;
+
+	UPROPERTY()
+	AActor* CombatTarget;
+
+	UPROPERTY(EditANywhere)
+	double CombatRadius = 500.f;
 
 protected:
 	// Called when the game starts or when spawned
@@ -38,5 +57,9 @@ public:
 
 	void PlayHitReactMontage(const FName& SectionName);
 
+	void PlayDeathMontage();
+
 	void DirectionalHitReact(const FVector& ImpactPoint);
+
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 };
