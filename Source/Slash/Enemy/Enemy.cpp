@@ -3,6 +3,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "../Components/AttributeComponent.h"
 #include "../HUD/HealthBarComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "AIController.h"
+#include "Perception/PawnSensingComponent.h"
 
 AEnemy::AEnemy()
 {
@@ -18,6 +21,14 @@ AEnemy::AEnemy()
 
 	HealthBarComponent = CreateDefaultSubobject<UHealthBarComponent>(TEXT("HealthBarComponent"));
 	HealthBarComponent->SetupAttachment(GetRootComponent());
+
+	PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>("PawnSensing");
+	PawnSensing->SetPeripheralVisionAngle(45.f);
+	PawnSensing->SightRadius = 4000.f;
+
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->MaxWalkSpeed = 150.f;
+	bUseControllerRotationYaw = false;
 }
 
 void AEnemy::BeginPlay()
@@ -30,20 +41,53 @@ void AEnemy::BeginPlay()
 		HealthBarComponent->SetVisibility(false);
 	}
 
+	EnemyController = Cast<AAIController>(GetController());
+	MoveToTarget(PatrolTarget);
+
+	if (PawnSensing)
+	{
+		PawnSensing->OnSeePawn.AddDynamic(this, &AEnemy::PawnSeen);
+	}
 }
 
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (CombatTarget)
+	if (EnemyState > EEnemyState::EES_Patrolling)
 	{
-		const double DistanceToTarget = (CombatTarget->GetActorLocation() - GetActorLocation()).Size();
-
-		if (DistanceToTarget > CombatRadius && HealthBarComponent)
+		if (!InTargetRange(CombatTarget, CombatRadius))
 		{
 			CombatTarget = nullptr;
-			HealthBarComponent->SetVisibility(false);
+			if (HealthBarComponent)
+			{
+				HealthBarComponent->SetVisibility(false);
+			}
+			
+			// Out of radius then loose interest
+			EnemyState = EEnemyState::EES_Patrolling;
+			GetCharacterMovement()->MaxWalkSpeed = 150.f;
+			MoveToTarget(PatrolTarget);
+		}
+		else if (!InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_Chasing)
+		{
+			// Out of attack range, chase
+			EnemyState = EEnemyState::EES_Chasing;
+			GetCharacterMovement()->MaxWalkSpeed = 300.f;
+			MoveToTarget(CombatTarget);
+		}
+		else if (InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_Attacking)
+		{
+			// In attack range, attack
+			EnemyState = EEnemyState::EES_Attacking;
+		}
+	}
+	else
+	{
+		if (InTargetRange(PatrolTarget, InRangeRadius))
+		{
+			PatrolTarget = ChoosePatrolTarget();
+			GetWorldTimerManager().SetTimer(PatrolTimer, this, &AEnemy::PatrolTimerFinished, FMath::RandRange(4.f, 7.f));
 		}
 	}
 }
@@ -143,6 +187,66 @@ float AEnemy::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEv
 		HealthBarComponent->SetHealthPercent(Attribute->GetHealthPercent());
 	}
 	CombatTarget = EventInstigator->GetPawn();
+
+	EnemyState = EEnemyState::EES_Attacking;
+	MoveToTarget(CombatTarget);
+	GetCharacterMovement()->MaxWalkSpeed = 300.f;
+	
 	return DamageAmount;
 }
 
+bool AEnemy::InTargetRange(AActor* Target, double AcceptanceRadius)
+{
+	if (Target == nullptr) return false;
+	const double DistanceToTarget = (Target->GetActorLocation() - GetActorLocation()).Size();
+	return DistanceToTarget <= AcceptanceRadius;
+}
+
+AActor* AEnemy::ChoosePatrolTarget()
+{
+	TArray<AActor*> ValidTargets;
+	for (AActor* Target : PatrolTargets)
+	{
+		if (PatrolTarget != Target)
+		{
+			ValidTargets.AddUnique(Target);
+		}
+	}
+	if (PatrolTargets.Num() > 0)
+	{
+		return ValidTargets[FMath::RandRange(0, ValidTargets.Num() - 1)];
+	}
+
+	return nullptr;
+}
+
+void AEnemy::MoveToTarget(AActor* Target)
+{
+	if (!EnemyController || !Target) return;
+	FAIMoveRequest MoveRequest;
+	MoveRequest.SetGoalActor(Target);
+	MoveRequest.SetAcceptanceRadius(30.f);
+	EnemyController->MoveTo(MoveRequest);
+}
+
+void AEnemy::PatrolTimerFinished()
+{
+	MoveToTarget(PatrolTarget);
+}
+
+void AEnemy::PawnSeen(APawn* SeenPawn)
+{
+	if (EnemyState == EEnemyState::EES_Chasing) return;
+
+	if (SeenPawn->ActorHasTag(FName("EchoCharacter")))
+	{
+		GetWorldTimerManager().ClearTimer(PatrolTimer);
+		GetCharacterMovement()->MaxWalkSpeed = 300.f;
+		CombatTarget = SeenPawn;
+		if (EnemyState != EEnemyState::EES_Attacking)
+		{
+			EnemyState = EEnemyState::EES_Chasing;
+			MoveToTarget(CombatTarget);
+		}
+	}
+}

@@ -33,6 +33,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UHealthBarComponent* HealthBarComponent;
 
+	UPROPERTY(EditAnywhere)
+	class UPawnSensingComponent* PawnSensing; 
+
 	UPROPERTY(BlueprintReadOnly)
 	EDeathPose DeathPose = EDeathPose::EDP_Alive;
 
@@ -41,6 +44,25 @@ public:
 
 	UPROPERTY(EditANywhere)
 	double CombatRadius = 500.f;
+
+	UPROPERTY(EditANywhere)
+	double AttackRadius = 150.f;
+
+	class AAIController* EnemyController;
+
+	FTimerHandle PatrolTimer;
+
+	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
+
+	// Navigation
+	UPROPERTY(EditInstanceOnly, Category = "AI Navigation")
+	AActor* PatrolTarget; // Current patrol target
+
+	UPROPERTY(EditInstanceOnly, Category = "AI Navigation")
+	TArray<AActor*> PatrolTargets;
+
+	UPROPERTY(EditAnywhere)
+	double InRangeRadius = 200.f;
 
 protected:
 	// Called when the game starts or when spawned
@@ -62,4 +84,13 @@ public:
 	void DirectionalHitReact(const FVector& ImpactPoint);
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+
+	bool InTargetRange(AActor* Target, double AcceptanceRadius);
+
+	AActor* ChoosePatrolTarget();
+	void MoveToTarget(AActor* Target);
+	void PatrolTimerFinished();
+
+	UFUNCTION()
+	void PawnSeen(APawn* SeenPawn);
 };

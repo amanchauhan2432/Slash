@@ -43,6 +43,8 @@ AEcho::AEcho()
 void AEcho::BeginPlay()
 {
 	Super::BeginPlay();
+
+	Tags.Add(FName("EchoCharacter"));
 	
 	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
 	{
