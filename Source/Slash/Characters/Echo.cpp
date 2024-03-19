@@ -12,6 +12,7 @@
 #include "EnhancedInputComponent.h"
 #include "../Items/Weapons/Weapon.h"
 #include "Components/BoxComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AEcho::AEcho()
@@ -21,6 +22,12 @@ AEcho::AEcho()
 
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
+
+	GetMesh()->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	GetMesh()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Overlap);
+	GetMesh()->SetGenerateOverlapEvents(true);
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(GetRootComponent());
@@ -44,7 +51,7 @@ void AEcho::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Tags.Add(FName("EchoCharacter"));
+	Tags.Add(FName("EngageableTarget"));
 	
 	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
 	{
@@ -54,7 +61,6 @@ void AEcho::BeginPlay()
 		}
 	}
 }
-
 
 // Called every frame
 void AEcho::Tick(float DeltaTime)
@@ -75,6 +81,15 @@ void AEcho::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Started, this, &AEcho::EKeyPressed);
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AEcho::Attack);
+	}
+}
+
+void AEcho::GetHit_Implementation(const FVector& ImpactPoint)
+{
+	if (HitSound && HitParticle)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, HitSound, ImpactPoint);
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitParticle, ImpactPoint);
 	}
 }
 
@@ -143,37 +158,6 @@ void AEcho::Attack()
 	}
 }
 
-void AEcho::PlayAttackMontage()
-{
-	if (AttackMontage)
-	{
-		GetMesh()->GetAnimInstance()->Montage_Play(AttackMontage);
-		FName SectionName;
-		switch (FMath::RandRange(0, 4))
-		{
-		case 0:
-			SectionName = FName("Attack1");
-			break;
-		case 1:
-			SectionName = FName("Attack2");
-			break;
-		case 2:
-			SectionName = FName("Attack3");
-			break;
-		case 3:
-			SectionName = FName("Attack4");
-			break;
-		case 4:
-			SectionName = FName("Attack5");
-			break;
-		default:
-			SectionName = FName("Attack1");
-			break;
-		}
-		GetMesh()->GetAnimInstance()->Montage_JumpToSection(SectionName, AttackMontage);
-	}
-}
-
 void AEcho::PlayArmDisarmMontage(FName SectionName)
 {
 	if (ArmDisarmMontage)
@@ -196,14 +180,5 @@ void AEcho::Disarm()
 	if (EquippedWeapon)
 	{
 		EquippedWeapon->AttachMeshToSocket(GetMesh(), FName("SpineSocket"));
-	}
-}
-
-void AEcho::SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled)
-{
-	if (EquippedWeapon && EquippedWeapon->WeaponBox)
-	{
-		EquippedWeapon->WeaponBox->SetCollisionEnabled(CollisionEnabled);
-		EquippedWeapon->IgnoreActors.Empty();
 	}
 }

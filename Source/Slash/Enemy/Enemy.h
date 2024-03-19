@@ -1,13 +1,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
-#include "../Interface/HitInterface.h"
+#include "../Characters/BaseCharacter.h"
 #include "../Characters/CharacterTypes.h"
 #include "Enemy.generated.h"
 
 UCLASS()
-class SLASH_API AEnemy : public ACharacter, public IHitInterface
+class SLASH_API AEnemy : public ABaseCharacter
 {
 	GENERATED_BODY()
 
@@ -15,29 +14,17 @@ public:
 	// Sets default values for this character's properties
 	AEnemy();
 
-	UPROPERTY(EditAnywhere, Category = Animation)
-	UAnimMontage* HitReactMontage;
+	UPROPERTY(EditAnywhere, Category = Enemy)
+	TSubclassOf<class AWeapon> WeaponClass;
 
-	UPROPERTY(EditAnywhere, Category = Animation)
-	UAnimMontage* DeathMontage;
-
-	UPROPERTY(EditAnywhere, Category = Sound)
-	USoundBase* HitSound;
-
-	UPROPERTY(EditAnywhere, Category = Particle)
-	UParticleSystem* HitParticle;
-
-	UPROPERTY(EditAnywhere)
-	class UAttributeComponent* Attribute;
+	UPROPERTY(EditAnywhere, Category = Enemy)
+	class UStaticMesh* WeaponMesh;
 
 	UPROPERTY(EditAnywhere)
 	class UHealthBarComponent* HealthBarComponent;
 
 	UPROPERTY(EditAnywhere)
-	class UPawnSensingComponent* PawnSensing; 
-
-	UPROPERTY(BlueprintReadOnly)
-	EDeathPose DeathPose = EDeathPose::EDP_Alive;
+	class UPawnSensingComponent* PawnSensing;
 
 	UPROPERTY()
 	AActor* CombatTarget;
@@ -52,7 +39,11 @@ public:
 
 	FTimerHandle PatrolTimer;
 
+	UPROPERTY(BlueprintReadWrite)
 	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
+
+	UPROPERTY(BlueprintReadOnly)
+	EDeathPose DeathPose;
 
 	// Navigation
 	UPROPERTY(EditInstanceOnly, Category = "AI Navigation")
@@ -65,23 +56,17 @@ public:
 	double InRangeRadius = 200.f;
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
+public:
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	UFUNCTION(BlueprintCallable)
+	void CheckCombatTarget();
 
 	virtual void GetHit_Implementation(const FVector& ImpactPoint) override;
 
-	void PlayHitReactMontage(const FName& SectionName);
-
-	void PlayDeathMontage();
-
-	void DirectionalHitReact(const FVector& ImpactPoint);
+	virtual int32 PlayDeathMontage() override;
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
@@ -93,4 +78,15 @@ public:
 
 	UFUNCTION()
 	void PawnSeen(APawn* SeenPawn);
+
+	virtual void Destroyed() override;
+
+	virtual void Attack() override;
+
+	void LooseInterest();
+	void StartPatrolling();
+	void ChaseTarget();
+
+	FTimerHandle AttackTimer;
+	void StartAttackTimer();
 };

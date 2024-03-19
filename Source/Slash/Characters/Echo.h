@@ -3,13 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
+#include "BaseCharacter.h"
 #include "InputActionValue.h"
 #include "CharacterTypes.h"
 #include "Echo.generated.h"
 
 UCLASS()
-class SLASH_API AEcho : public ACharacter
+class SLASH_API AEcho : public ABaseCharacter
 {
 	GENERATED_BODY()
 
@@ -30,15 +30,11 @@ public:
 	class UGroomComponent* Eyebrows;
 
 	class AWeapon* OverlappingWeapon;
-	AWeapon* EquippedWeapon;
 
 	ECharacterState CharacterState = ECharacterState::ECS_UnEquipped;
 
 	UPROPERTY(BlueprintReadWrite)
 	EActionState ActionState = EActionState::EAS_Unoccupied;
-
-	UPROPERTY(EditAnywhere, Category = Animation)
-	class UAnimMontage* AttackMontage;
 
 	UPROPERTY(EditAnywhere, Category = Animation)
 	class UAnimMontage* ArmDisarmMontage;
@@ -76,10 +72,11 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	void EKeyPressed();
-	void Attack();
+	virtual void GetHit_Implementation(const FVector& ImpactPoint) override;
 
-	void PlayAttackMontage();
+	void EKeyPressed();
+	virtual void Attack() override;
+
 	void PlayArmDisarmMontage(FName SectionName);
 
 	UFUNCTION(BlueprintCallable)
@@ -87,8 +84,5 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void Disarm();
-
-	UFUNCTION(BlueprintCallable)
-	void SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
 
 };

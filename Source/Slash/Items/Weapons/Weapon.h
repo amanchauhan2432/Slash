@@ -35,6 +35,13 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	float Damage  =  20.f;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	FVector BoxTraceExtent = FVector(5.f);
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	bool bShowBoxDebug = false;
+
 protected:
 
 	virtual void BeginPlay() override;
@@ -51,5 +58,7 @@ protected:
 public:
 	void Equip(USceneComponent* InParent, FName InSocketName, AActor* NewOwner, APawn* NewInstigator);
 	void AttachMeshToSocket(USceneComponent* InParent, FName InSocketName);
+
+	void BoxTrace(FHitResult& BoxHit);
 
 };

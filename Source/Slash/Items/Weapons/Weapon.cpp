@@ -56,20 +56,15 @@ void AWeapon::OnSphereOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActo
 
 void AWeapon::OnBoxOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-    FVector Start = BoxTraceStart->GetComponentLocation();
-    FVector End = BoxTraceEnd->GetComponentLocation();
+    if (GetOwner()->ActorHasTag(TEXT("Enemy")) && OtherActor->ActorHasTag(TEXT("Enemy"))) return;
 
-    TArray<AActor*> ActorsToIgnore;
-    ActorsToIgnore.Add(this);
-    for (AActor* Actor : IgnoreActors)
-    {
-        ActorsToIgnore.AddUnique(Actor); 
-    }
     FHitResult BoxHit;
-    UKismetSystemLibrary::BoxTraceSingle(this, Start, End, FVector(5.f, 5.f, 5.f), BoxTraceStart->GetComponentRotation(), ETraceTypeQuery::TraceTypeQuery1, false, ActorsToIgnore, EDrawDebugTrace::None, BoxHit, true);
+    BoxTrace(BoxHit);
 
     if (BoxHit.GetActor())
     {
+        if (GetOwner()->ActorHasTag(TEXT("Enemy")) && BoxHit.GetActor()->ActorHasTag(TEXT("Enemy"))) return;
+
         UGameplayStatics::ApplyDamage(BoxHit.GetActor(), Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
 
         IHitInterface* HitInterface = Cast<IHitInterface>(BoxHit.GetActor());
@@ -77,9 +72,24 @@ void AWeapon::OnBoxOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor
         {
             HitInterface->Execute_GetHit(BoxHit.GetActor(), BoxHit.ImpactPoint);
         }
-        IgnoreActors.AddUnique(BoxHit.GetActor());
+        
         CreateFields(BoxHit.ImpactPoint);
     }
+}
+
+void AWeapon::BoxTrace(FHitResult& BoxHit)
+{
+    FVector Start = BoxTraceStart->GetComponentLocation();
+    FVector End = BoxTraceEnd->GetComponentLocation();
+
+    TArray<AActor*> ActorsToIgnore;
+    ActorsToIgnore.Add(this);
+    for (AActor* Actor : IgnoreActors)
+    {
+        ActorsToIgnore.AddUnique(Actor);
+    }
+    UKismetSystemLibrary::BoxTraceSingle(this, Start, End, BoxTraceExtent, BoxTraceStart->GetComponentRotation(), ETraceTypeQuery::TraceTypeQuery1, false, ActorsToIgnore, bShowBoxDebug ? EDrawDebugTrace::ForDuration : EDrawDebugTrace::None, BoxHit, true);
+    IgnoreActors.AddUnique(BoxHit.GetActor());
 }
 
 void AWeapon::Equip(USceneComponent* InParent, FName InSocketName, AActor* NewOwner, APawn* NewInstigator)
@@ -110,3 +120,4 @@ void AWeapon::AttachMeshToSocket(USceneComponent* InParent, FName InSocketName)
     FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
     ItemMesh->AttachToComponent(InParent, TransformRules, InSocketName);
 }
+
