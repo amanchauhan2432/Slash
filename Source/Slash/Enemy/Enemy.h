@@ -26,9 +26,6 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UPawnSensingComponent* PawnSensing;
 
-	UPROPERTY()
-	AActor* CombatTarget;
-
 	UPROPERTY(EditANywhere)
 	double CombatRadius = 500.f;
 
@@ -64,7 +61,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void CheckCombatTarget();
 
-	virtual void GetHit_Implementation(const FVector& ImpactPoint) override;
+	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* OtherActor) override;
 
 	virtual int32 PlayDeathMontage() override;
 

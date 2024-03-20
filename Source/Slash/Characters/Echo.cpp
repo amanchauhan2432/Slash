@@ -84,13 +84,12 @@ void AEcho::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	}
 }
 
-void AEcho::GetHit_Implementation(const FVector& ImpactPoint)
+void AEcho::GetHit_Implementation(const FVector& ImpactPoint, AActor* OtherActor)
 {
-	if (HitSound && HitParticle)
-	{
-		UGameplayStatics::PlaySoundAtLocation(this, HitSound, ImpactPoint);
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitParticle, ImpactPoint);
-	}
+	Super::GetHit_Implementation(ImpactPoint, OtherActor);
+
+	ActionState = EActionState::EAS_HitReact;
+	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void AEcho::Movement(const FInputActionValue& Value)

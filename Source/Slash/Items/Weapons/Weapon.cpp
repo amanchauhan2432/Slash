@@ -70,7 +70,7 @@ void AWeapon::OnBoxOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor
         IHitInterface* HitInterface = Cast<IHitInterface>(BoxHit.GetActor());
         if (HitInterface)
         {
-            HitInterface->Execute_GetHit(BoxHit.GetActor(), BoxHit.ImpactPoint);
+            HitInterface->Execute_GetHit(BoxHit.GetActor(), BoxHit.ImpactPoint, GetOwner());
         }
         
         CreateFields(BoxHit.ImpactPoint);
@@ -84,6 +84,7 @@ void AWeapon::BoxTrace(FHitResult& BoxHit)
 
     TArray<AActor*> ActorsToIgnore;
     ActorsToIgnore.Add(this);
+    ActorsToIgnore.AddUnique(GetOwner());
     for (AActor* Actor : IgnoreActors)
     {
         ActorsToIgnore.AddUnique(Actor);

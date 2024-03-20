@@ -1,6 +1,5 @@
 #include "Enemy.h"
 #include "Components/CapsuleComponent.h"
-#include "Kismet/GameplayStatics.h"
 #include "../Components/AttributeComponent.h"
 #include "../HUD/HealthBarComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -105,25 +104,21 @@ void AEnemy::CheckCombatTarget()
 	}
 }
 
-void AEnemy::GetHit_Implementation(const FVector& ImpactPoint)
+void AEnemy::GetHit_Implementation(const FVector& ImpactPoint, AActor* OtherActor)
 {
-	if (HealthBarComponent)
+	Super::GetHit_Implementation(ImpactPoint, OtherActor);
+
+	if (HealthBarComponent && EnemyState != EEnemyState::EES_Dead)
 	{
 		HealthBarComponent->SetVisibility(true);
 	}
-	if (Attribute && Attribute->IsAlive())
-	{
-		DirectionalHitReact(ImpactPoint);
-	}
-	else
-	{
-		PlayDeathMontage();
-	}
+	GetWorldTimerManager().ClearTimer(PatrolTimer);
+	GetWorldTimerManager().ClearTimer(AttackTimer);
+	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	if (HitSound && HitParticle)
+	if (AttackMontage && GetMesh()->GetAnimInstance())
 	{
-		UGameplayStatics::PlaySoundAtLocation(this, HitSound, ImpactPoint);
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitParticle, ImpactPoint);
+		GetMesh()->GetAnimInstance()->Montage_Stop(0.25f, AttackMontage);
 	}
 }
 
@@ -135,6 +130,7 @@ int32 AEnemy::PlayDeathMontage()
 	EnemyState = EEnemyState::EES_Dead;
 	GetWorldTimerManager().ClearTimer(AttackTimer);
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
 	SetLifeSpan(7.f);
 	if (HealthBarComponent)
 	{
@@ -152,7 +148,14 @@ float AEnemy::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEv
 	}
 	CombatTarget = EventInstigator->GetPawn();
 
-	ChaseTarget();
+	if (InTargetRange(CombatTarget, AttackRadius)) //Inside attack radius
+	{
+		EnemyState = EEnemyState::EES_Attacking;
+	}
+	else if (!InTargetRange(CombatTarget, AttackRadius)) // Outside attack radius
+	{
+		ChaseTarget();
+	}
 	
 	return DamageAmount;
 }
@@ -252,6 +255,6 @@ void AEnemy::ChaseTarget()
 void AEnemy::StartAttackTimer()
 {
 	EnemyState = EEnemyState::EES_Attacking;
-	const float AttackTime = FMath::RandRange(0.5f, 1.f);
+	const float AttackTime = FMath::RandRange(0.1f, 0.5f);
 	GetWorldTimerManager().SetTimer(AttackTimer, this, &AEnemy::Attack, AttackTime);
 }

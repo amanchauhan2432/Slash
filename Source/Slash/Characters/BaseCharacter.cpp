@@ -2,6 +2,7 @@
 #include "../Items/Weapons/Weapon.h"
 #include "Components/BoxComponent.h"
 #include "../Components/AttributeComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 ABaseCharacter::ABaseCharacter()
 {
@@ -28,6 +29,24 @@ void ABaseCharacter::SetWeaponCollisionEnabled(ECollisionEnabled::Type Collision
 	{
 		EquippedWeapon->WeaponBox->SetCollisionEnabled(CollisionEnabled);
 		EquippedWeapon->IgnoreActors.Empty();
+	}
+}
+
+void ABaseCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* OtherActor)
+{
+	if (Attribute && Attribute->IsAlive())
+	{
+		DirectionalHitReact(OtherActor->GetActorLocation());
+	}
+	else
+	{
+		PlayDeathMontage();
+	}
+
+	if (HitSound && HitParticle)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, HitSound, ImpactPoint);
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitParticle, ImpactPoint);
 	}
 }
 
@@ -94,4 +113,23 @@ void ABaseCharacter::DirectionalHitReact(const FVector& ImpactPoint)
 		SectionName = FName("Right");
 	}
 	PlayHitReactMontage(SectionName);
+}
+
+FVector ABaseCharacter::GetTranslationWarpTarget()
+{
+	if (!CombatTarget) return FVector();
+
+	const FVector CombatTargetLocation = CombatTarget->GetActorLocation();
+	const FVector Location = GetActorLocation();
+
+	const FVector TargetToMe = (Location - CombatTargetLocation).GetSafeNormal() * 75.f;
+
+	return CombatTargetLocation + TargetToMe;
+}
+
+FVector ABaseCharacter::GetRotationWarpTarget()
+{
+	if (!CombatTarget) return FVector();
+
+	return CombatTarget->GetActorLocation();
 }

@@ -31,6 +31,8 @@ public:
 	UPROPERTY(EditAnywhere, Category = Animation)
 	UAnimMontage* HitReactMontage;
 
+	UPROPERTY(BlueprintReadOnly)
+	AActor* CombatTarget;
 
 	UPROPERTY(EditAnywhere)
 	class UAttributeComponent* Attribute;
@@ -49,6 +51,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
 
+	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* OtherActor);
+
 	virtual void Attack();
 
 	virtual void PlayAttackMontage();
@@ -58,4 +62,10 @@ public:
 	void PlayHitReactMontage(const FName& SectionName);
 
 	void DirectionalHitReact(const FVector& ImpactPoint);
+
+	UFUNCTION(BlueprintCallable)
+	FVector GetTranslationWarpTarget();
+
+	UFUNCTION(BlueprintCallable)
+	FVector GetRotationWarpTarget();
 };
