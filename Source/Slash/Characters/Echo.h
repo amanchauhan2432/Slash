@@ -39,6 +39,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = Animation)
 	class UAnimMontage* ArmDisarmMontage;
 
+	UPROPERTY()
+	class UEchoWidget* EchoWidget;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -71,7 +74,8 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+	virtual int32 PlayDeathMontage() override;
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* OtherActor) override;
 
 	void EKeyPressed();

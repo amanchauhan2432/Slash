@@ -23,5 +23,7 @@ void UEchoAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		bIsFalling = Echo->GetCharacterMovement()->IsFalling();
 
 		CharacterState = Echo->CharacterState;
+		ActionState = Echo->ActionState;
+		DeathPose = Echo->DeathPose;
 	}
 }

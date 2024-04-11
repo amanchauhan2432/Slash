@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "../Interface/HitInterface.h"
+#include "CharacterTypes.h"
 #include "BaseCharacter.generated.h"
 
 UCLASS()
@@ -21,6 +22,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = Animation)
 	TArray<FName> AttackSectionNames;
+
+	UPROPERTY(BlueprintReadOnly)
+	EDeathPose DeathPose;
 
 	UPROPERTY(EditAnywhere, Category = Animation)
 	UAnimMontage* DeathMontage;
@@ -50,6 +54,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
+
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
 
 	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* OtherActor);
 

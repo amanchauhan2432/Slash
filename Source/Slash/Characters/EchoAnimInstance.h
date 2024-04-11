@@ -31,4 +31,10 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Movement | CharacterState")
 	ECharacterState CharacterState;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Movement | CharacterState")
+	EActionState ActionState;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Movement | CharacterState")
+	EDeathPose DeathPose;
 };

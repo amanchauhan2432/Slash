@@ -39,9 +39,6 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
 
-	UPROPERTY(BlueprintReadOnly)
-	EDeathPose DeathPose;
-
 	// Navigation
 	UPROPERTY(EditInstanceOnly, Category = "AI Navigation")
 	AActor* PatrolTarget; // Current patrol target

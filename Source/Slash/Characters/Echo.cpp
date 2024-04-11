@@ -3,6 +3,7 @@
 
 #include "Echo.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GroomComponent.h"
@@ -13,6 +14,9 @@
 #include "../Items/Weapons/Weapon.h"
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "../HUD/EchoHUD.h"
+#include "../HUD/EchoWidget.h"
+#include "../Components/AttributeComponent.h"
 
 // Sets default values
 AEcho::AEcho()
@@ -59,6 +63,15 @@ void AEcho::BeginPlay()
 		{
 			Subsystem->AddMappingContext(EchoMappingContext, 0);
 		}
+		EchoWidget = Cast<AEchoHUD>(PlayerController->GetHUD())->EchoWidget;
+
+		if (EchoWidget)
+		{
+			EchoWidget->SetHealthbar(1.f);
+			EchoWidget->SetStaminaBar(1.f);
+			EchoWidget->SetGoldText(0);
+			EchoWidget->SetExpText(0);
+		}
 	}
 }
 
@@ -84,12 +97,39 @@ void AEcho::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	}
 }
 
+int32 AEcho::PlayDeathMontage()
+{
+	int32 RandomSection = Super::PlayDeathMontage();
+
+	DeathPose = StaticCast<EDeathPose>(RandomSection);
+	ActionState = EActionState::EAS_Dead;
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
+	SetLifeSpan(7.f);
+
+	return 0;
+}
+
+float AEcho::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	
+	if (EchoWidget)
+	{
+		EchoWidget->SetHealthbar(Attribute->GetHealthPercent());
+	}
+	return DamageAmount;
+}
+
 void AEcho::GetHit_Implementation(const FVector& ImpactPoint, AActor* OtherActor)
 {
 	Super::GetHit_Implementation(ImpactPoint, OtherActor);
 
-	ActionState = EActionState::EAS_HitReact;
 	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
+	if (Attribute && Attribute->Health > 0.f)
+	{
+		ActionState = EActionState::EAS_HitReact;
+	}
 }
 
 void AEcho::Movement(const FInputActionValue& Value)

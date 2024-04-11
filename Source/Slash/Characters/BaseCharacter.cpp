@@ -32,6 +32,15 @@ void ABaseCharacter::SetWeaponCollisionEnabled(ECollisionEnabled::Type Collision
 	}
 }
 
+float ABaseCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	if (Attribute)
+	{
+		Attribute->ReceiveDamage(DamageAmount);
+	}
+	return DamageAmount;
+}
+
 void ABaseCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* OtherActor)
 {
 	if (Attribute && Attribute->IsAlive())
@@ -52,6 +61,10 @@ void ABaseCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* O
 
 void ABaseCharacter::Attack()
 {
+	if (CombatTarget && CombatTarget->ActorHasTag(FName("Dead")))
+	{
+		CombatTarget = nullptr;
+	}
 }
 
 void ABaseCharacter::PlayAttackMontage()
@@ -66,7 +79,8 @@ void ABaseCharacter::PlayAttackMontage()
 
 int32 ABaseCharacter::PlayDeathMontage()
 {
-	if (GetMesh()->GetAnimInstance() && DeathSectionNames.Num() > 0)
+	Tags.AddUnique(FName("Dead"));
+	if (GetMesh()->GetAnimInstance() && DeathMontage && DeathSectionNames.Num() > 0)
 	{
 		GetMesh()->GetAnimInstance()->Montage_Play(DeathMontage);
 		const int32 RandomSection = FMath::RandRange(0, DeathSectionNames.Num() - 1);

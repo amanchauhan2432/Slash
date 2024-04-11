@@ -141,9 +141,11 @@ int32 AEnemy::PlayDeathMontage()
 
 float AEnemy::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
 {
-	if (Attribute && HealthBarComponent)
+	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+
+	if (HealthBarComponent)
 	{
-		Attribute->ReceiveDamage(DamageAmount);
 		HealthBarComponent->SetHealthPercent(Attribute->GetHealthPercent());
 	}
 	CombatTarget = EventInstigator->GetPawn();
@@ -223,9 +225,9 @@ void AEnemy::Destroyed()
 void AEnemy::Attack()
 {
 	Super::Attack();
+	if (CombatTarget == nullptr) return;
 
 	PlayAttackMontage();
-
 	EnemyState = EEnemyState::EES_Engaged;
 }
 
