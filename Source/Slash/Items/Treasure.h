@@ -17,11 +17,8 @@ public:
 
 	class AEcho* Player;
 
-	UPROPERTY(EditAnywhere, Category = Sound)
-	USoundBase* PickUpSound;
-
 	UPROPERTY(EditAnywhere, Category = Score)
-	int32 Gold = 5;
+	int32 GoldValue = 5;
 
 protected:
 	// Called when the game starts or when spawned

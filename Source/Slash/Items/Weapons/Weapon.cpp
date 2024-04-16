@@ -110,9 +110,9 @@ void AWeapon::Equip(USceneComponent* InParent, FName InSocketName, AActor* NewOw
     {
         Sphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     }
-    if (EmbersEffect)
+    if (ItemEffect)
     {
-        EmbersEffect->Deactivate();
+        ItemEffect->Deactivate();
     }
 }
 

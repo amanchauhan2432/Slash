@@ -21,8 +21,8 @@ AItem::AItem()
 	Sphere = CreateDefaultSubobject<USphereComponent>("Sphere");
 	Sphere->SetupAttachment(ItemMesh);
 
-	EmbersEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("EmbersEffect"));
-	EmbersEffect->SetupAttachment(GetRootComponent());
+	ItemEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("EmbersEffect"));
+	ItemEffect->SetupAttachment(GetRootComponent());
 }
 
 // Called when the game starts or when spawned

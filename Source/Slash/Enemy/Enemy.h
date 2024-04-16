@@ -49,6 +49,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	double InRangeRadius = 200.f;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class AExp> ExpClass;
+
 protected:
 	virtual void BeginPlay() override;
 

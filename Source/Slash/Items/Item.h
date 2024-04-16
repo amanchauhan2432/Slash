@@ -38,7 +38,13 @@ public:
 	float TimeConstant = 5.f;
 
 	UPROPERTY(EditAnywhere)
-	class UNiagaraComponent* EmbersEffect;
+	class UNiagaraComponent* ItemEffect;
+
+	UPROPERTY(EditAnywhere)
+	class UNiagaraSystem* PickupEffect;
+
+	UPROPERTY(EditAnywhere)
+	class USoundBase* PickupSound;
 
 protected:
 	// Called when the game starts or when spawned

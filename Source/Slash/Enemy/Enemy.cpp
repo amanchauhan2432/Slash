@@ -6,6 +6,7 @@
 #include "AIController.h"
 #include "Perception/PawnSensingComponent.h"
 #include "../Items/Weapons/Weapon.h"
+#include "../Items/Exp.h"
 
 AEnemy::AEnemy()
 {
@@ -136,6 +137,11 @@ int32 AEnemy::PlayDeathMontage()
 	{
 		HealthBarComponent->SetVisibility(false);
 	}
+	if (GetWorld() && ExpClass)
+	{
+		GetWorld()->SpawnActor<AExp>(ExpClass, GetActorTransform());
+	}
+
 	return 0;
 }
 

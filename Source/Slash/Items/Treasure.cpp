@@ -26,7 +26,8 @@ void ATreasure::OnSphereOverlapBegin(UPrimitiveComponent* OverlappedComponent, A
 	Player = Cast<AEcho>(OtherActor);
     if (Player)
     {
-        UGameplayStatics::SpawnSoundAtLocation(this, PickUpSound, GetActorLocation());
+		Player->UpdateGoldText(GoldValue);
+        UGameplayStatics::SpawnSoundAtLocation(this, PickupSound, GetActorLocation());
 
 		Destroy();
     }

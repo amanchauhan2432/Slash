@@ -39,6 +39,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = Animation)
 	class UAnimMontage* ArmDisarmMontage;
 
+	UPROPERTY(EditAnywhere, Category = Animation)
+	class UAnimMontage* DodgeMontage;
+
 	UPROPERTY()
 	class UEchoWidget* EchoWidget;
 
@@ -68,6 +71,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* AttackAction;
 
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* DodgeAction;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -80,6 +86,7 @@ public:
 
 	void EKeyPressed();
 	virtual void Attack() override;
+	void Dodge();
 
 	void PlayArmDisarmMontage(FName SectionName);
 
@@ -88,5 +95,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void Disarm();
+
+	void UpdateGoldText(int32 InValue);
+	void UpdateExpText( int32 InValue);
 
 };

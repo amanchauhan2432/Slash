@@ -80,6 +80,12 @@ void AEcho::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (Attribute && EchoWidget)
+	{
+		Attribute->Stamina = FMath::Clamp(Attribute->Stamina + 5.f * DeltaTime, 0.f, 100.f);
+		EchoWidget->SetStaminaBar(Attribute->GetStaminaPercent());
+	}
+
 }
 
 // Called to bind functionality to input
@@ -94,6 +100,7 @@ void AEcho::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Started, this, &AEcho::EKeyPressed);
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AEcho::Attack);
+		EnhancedInputComponent->BindAction(DodgeAction, ETriggerEvent::Triggered, this, &AEcho::Dodge);
 	}
 }
 
@@ -197,6 +204,20 @@ void AEcho::Attack()
 	}
 }
 
+void AEcho::Dodge()
+{
+	if (ActionState != EActionState::EAS_Unoccupied || Attribute->Stamina < 25.f) return;
+
+	if (DodgeMontage && Attribute && EchoWidget)
+	{
+		GetMesh()->GetAnimInstance()->Montage_Play(DodgeMontage);
+		ActionState = EActionState::EAS_Dodge;
+
+		Attribute->UseStamina(25.f);
+		EchoWidget->SetStaminaBar(Attribute->GetStaminaPercent());
+	}
+}
+
 void AEcho::PlayArmDisarmMontage(FName SectionName)
 {
 	if (ArmDisarmMontage)
@@ -219,5 +240,23 @@ void AEcho::Disarm()
 	if (EquippedWeapon)
 	{
 		EquippedWeapon->AttachMeshToSocket(GetMesh(), FName("SpineSocket"));
+	}
+}
+
+void AEcho::UpdateGoldText(int32 InValue)
+{
+	if (Attribute && EchoWidget)
+	{
+		Attribute->GoldValue += InValue;
+		EchoWidget->SetGoldText(Attribute->GoldValue);
+	}
+}
+
+void AEcho::UpdateExpText(int32 InValue)
+{
+	if (Attribute && EchoWidget)
+	{
+		Attribute->ExpValue += InValue;
+		EchoWidget->SetExpText(Attribute->ExpValue);
 	}
 }
