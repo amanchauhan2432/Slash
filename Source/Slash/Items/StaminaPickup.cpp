@@ -12,7 +12,7 @@ void AStaminaPickup::OnSphereOverlapBegin(UPrimitiveComponent* OverlappedCompone
     AEcho* Player = Cast<AEcho>(OtherActor);
     if (Player && Player->Attribute && Player->EchoWidget && PickupSound)
     {
-        Player->Attribute->Stamina = 100.f;
+        Player->Attribute->Stamina = Player->Attribute->MaxStamina;
         Player->EchoWidget->SetStaminaBar(1.f);
 
         UGameplayStatics::PlaySoundAtLocation(this, PickupSound, GetActorLocation());

@@ -74,4 +74,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	FVector GetRotationWarpTarget();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void ShowEndWidget();
 };

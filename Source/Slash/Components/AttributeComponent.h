@@ -16,7 +16,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
-	float MaxHealth = 100.f;
+	float MaxHealth = 150.f;
 
 	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
 	float Health = 100.f;

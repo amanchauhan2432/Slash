@@ -17,9 +17,6 @@ public:
 	UPROPERTY(EditAnywhere, Category = Enemy)
 	TSubclassOf<class AWeapon> WeaponClass;
 
-	UPROPERTY(EditAnywhere, Category = Enemy)
-	class UStaticMesh* WeaponMesh;
-
 	UPROPERTY(EditAnywhere)
 	class UHealthBarComponent* HealthBarComponent;
 
@@ -40,7 +37,7 @@ public:
 	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
 
 	// Navigation
-	UPROPERTY(EditInstanceOnly, Category = "AI Navigation")
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "AI Navigation")
 	AActor* PatrolTarget; // Current patrol target
 
 	UPROPERTY(EditInstanceOnly, Category = "AI Navigation")
@@ -51,6 +48,8 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AExp> ExpClass;
+
+	class AEcho* Player;
 
 protected:
 	virtual void BeginPlay() override;
@@ -70,6 +69,8 @@ public:
 	bool InTargetRange(AActor* Target, double AcceptanceRadius);
 
 	AActor* ChoosePatrolTarget();
+
+	UFUNCTION(BlueprintCallable)
 	void MoveToTarget(AActor* Target);
 	void PatrolTimerFinished();
 

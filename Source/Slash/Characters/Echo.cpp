@@ -72,6 +72,19 @@ void AEcho::BeginPlay()
 			EchoWidget->SetGoldText(0);
 			EchoWidget->SetExpText(0);
 		}
+
+		if (WeaponClass)
+		{
+			AWeapon* MainWeapon = GetWorld()->SpawnActor<AWeapon>(WeaponClass);
+			MainWeapon->EquipSound = nullptr;
+			MainWeapon->Equip(GetMesh(), FName("WeaponSocket"), this, this);
+			CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
+			EquippedWeapon = MainWeapon;
+		}
+
+		TArray<AActor*> Enemies;
+		UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("Enemy"), Enemies);
+		TotalEnemies = Enemies.Num();
 	}
 }
 
@@ -112,6 +125,7 @@ int32 AEcho::PlayDeathMontage()
 	ActionState = EActionState::EAS_Dead;
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
+	ShowEndWidget();
 	SetLifeSpan(7.f);
 
 	return 0;

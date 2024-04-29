@@ -5,8 +5,10 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "AIController.h"
 #include "Perception/PawnSensingComponent.h"
+#include "Navigation/PathFollowingComponent.h"
 #include "../Items/Weapons/Weapon.h"
 #include "../Items/Exp.h"
+#include "../Characters/Echo.h"
 
 AEnemy::AEnemy()
 {
@@ -50,12 +52,11 @@ void AEnemy::BeginPlay()
 		PawnSensing->OnSeePawn.AddDynamic(this, &AEnemy::PawnSeen);
 	}
 
-	if (WeaponClass && WeaponMesh)
+	if (WeaponClass)
 	{
 		AWeapon* MainWeapon = GetWorld()->SpawnActor<AWeapon>(WeaponClass);
 		MainWeapon->EquipSound = nullptr;
-		MainWeapon->Equip(GetMesh(), FName("RightHandSocket"), this, this);
-		MainWeapon->ItemMesh->SetStaticMesh(WeaponMesh);
+		MainWeapon->Equip(GetMesh(), FName("WeaponSocket"), this, this);
 		EquippedWeapon = MainWeapon;
 	}
 }
@@ -63,7 +64,7 @@ void AEnemy::BeginPlay()
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
+
 	if (EnemyState == EEnemyState::EES_Dead) return;
 
 	if (EnemyState > EEnemyState::EES_Patrolling)
@@ -133,6 +134,16 @@ int32 AEnemy::PlayDeathMontage()
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
 	SetLifeSpan(7.f);
+
+	if (Player)
+	{
+		Player->TotalEnemies -= 1;
+		if (Player->TotalEnemies == 0)
+		{
+			ShowEndWidget();
+		}
+	}
+
 	if (HealthBarComponent)
 	{
 		HealthBarComponent->SetVisibility(false);
@@ -214,6 +225,7 @@ void AEnemy::PawnSeen(APawn* SeenPawn)
 		EnemyState < EEnemyState::EES_Attacking &&
 		SeenPawn->ActorHasTag(FName("EngageableTarget")))
 	{
+		if (!Player) { Player = Cast<AEcho>(SeenPawn); }
 		CombatTarget = SeenPawn;
 		GetWorldTimerManager().ClearTimer(PatrolTimer);
 		ChaseTarget();
